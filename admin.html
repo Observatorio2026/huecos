@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Administrativo | Geovisor de Huecos</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="marca">
+        <span class="franja"></span>
+        <div>
+            <h1>Panel Administrativo</h1>
+            <span class="subtitulo">Geovisor de Huecos · La Ceja del Tambo</span>
+        </div>
+    </div>
+    <div class="header-acciones">
+        <a href="index.html" class="btn btn-texto">← Volver al geovisor</a>
+        <button id="btnLogout" class="btn btn-secundario btn-sm" style="display:none">Cerrar sesión</button>
+    </div>
+</header>
+
+<!-- ================= LOGIN ================= -->
+<div id="vistaLogin" class="login-contenedor">
+    <form id="formLogin" class="login-caja">
+        <h2>Iniciar sesión</h2>
+        <p class="ayuda" style="margin-bottom:1.2rem">
+            Acceso exclusivo para funcionarios de la Secretaría de Planeación.
+        </p>
+        <div id="mensajeLogin"></div>
+        <div class="campo">
+            <label for="loginEmail">Correo electrónico</label>
+            <input type="email" id="loginEmail" required autocomplete="username">
+        </div>
+        <div class="campo">
+            <label for="loginPassword">Contraseña</label>
+            <input type="password" id="loginPassword" required autocomplete="current-password">
+        </div>
+        <button type="submit" id="btnLogin" class="btn btn-institucional btn-block">Ingresar</button>
+    </form>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
+<div id="vistaDashboard" class="dashboard-contenedor" style="display:none">
+
+    <!-- Tarjetas resumen -->
+    <div class="tarjetas-resumen">
+        <div class="tarjeta">
+            <span class="tarjeta-numero" id="numTotal">0</span>
+            <span class="tarjeta-label">Total reportes</span>
+        </div>
+        <div class="tarjeta tarjeta-pendiente">
+            <span class="tarjeta-numero" id="numPendiente">0</span>
+            <span class="tarjeta-label">Pendientes</span>
+        </div>
+        <div class="tarjeta tarjeta-proceso">
+            <span class="tarjeta-numero" id="numProceso">0</span>
+            <span class="tarjeta-label">En proceso</span>
+        </div>
+        <div class="tarjeta tarjeta-reparado">
+            <span class="tarjeta-numero" id="numReparado">0</span>
+            <span class="tarjeta-label">Reparados</span>
+        </div>
+    </div>
+
+    <div class="panel-principal">
+        <!-- Mapa administrativo -->
+        <div class="panel-mapa">
+            <div id="mapaAdmin"></div>
+        </div>
+
+        <!-- Tabla de gestión -->
+        <div class="panel-tabla">
+            <div class="tabla-controles">
+                <select id="filtroEstado">
+                    <option value="todos">Todos los estados</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_proceso">En proceso</option>
+                    <option value="reparado">Reparado</option>
+                </select>
+                <input type="text" id="filtroBusqueda" placeholder="Buscar por dirección o descripción...">
+                <button id="btnExportar" class="btn btn-secundario btn-sm">⬇ Exportar XLSX</button>
+                <button id="btnRefrescar" class="btn btn-texto btn-sm">⟳ Refrescar</button>
+            </div>
+
+            <div id="listaReportes" class="lista-reportes">
+                <!-- Tarjetas de reporte generadas dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL: DETALLE / EDICIÓN ================= -->
+<div id="modalDetalle" class="modal-fondo" hidden>
+    <div class="modal-caja">
+        <div class="modal-encabezado">
+            <h2>Detalle del reporte</h2>
+            <button class="modal-cerrar" data-cerrar-detalle aria-label="Cerrar">×</button>
+        </div>
+        <div class="modal-cuerpo" id="cuerpoModalDetalle">
+            <!-- Contenido generado dinámicamente -->
+        </div>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

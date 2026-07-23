@@ -1,0 +1,423 @@
+/* =====================================================================
+   GEOVISOR DE HUECOS — La Ceja del Tambo
+   Identidad visual: señalización vial.
+   Asfalto oscuro + amarillo de demarcación + verde institucional.
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --asfalto-900: #1B1D21;
+    --asfalto-700: #2B2E33;
+    --asfalto-500: #494E57;
+    --concreto-300: #C7CBD1;
+    --concreto-100: #F2F3F1;
+    --blanco-vial: #FAFAF8;
+
+    --amarillo-vial: #FFC53D;
+    --amarillo-vial-oscuro: #E0A324;
+
+    --verde-institucional: #1F6F54;
+    --verde-institucional-claro: #2E9E6D;
+
+    --estado-pendiente: #E0522E;
+    --estado-proceso: #E0A324;
+    --estado-reparado: #2E9E6D;
+
+    --fuente-display: 'Space Grotesk', sans-serif;
+    --fuente-texto: 'Inter', sans-serif;
+    --fuente-datos: 'JetBrains Mono', monospace;
+
+    --radio: 10px;
+    --sombra: 0 8px 24px rgba(27, 29, 33, 0.18);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--fuente-texto);
+    background: var(--concreto-100);
+    color: var(--asfalto-900);
+}
+
+/* ---------- Barra superior ---------- */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--asfalto-900);
+    color: var(--blanco-vial);
+    padding: 0.85rem 1.5rem;
+    position: relative;
+    z-index: 1000;
+    box-shadow: var(--sombra);
+}
+
+.app-header .marca {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.marca .franja {
+    width: 8px;
+    height: 34px;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--amarillo-vial),
+        var(--amarillo-vial) 6px,
+        var(--asfalto-700) 6px,
+        var(--asfalto-700) 12px
+    );
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.marca h1 {
+    font-family: var(--fuente-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.15;
+}
+
+.marca span.subtitulo {
+    display: block;
+    font-family: var(--fuente-texto);
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--concreto-300);
+    letter-spacing: 0.02em;
+}
+
+.header-acciones {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+    font-family: var(--fuente-texto);
+    font-weight: 600;
+    font-size: 0.88rem;
+    border: none;
+    border-radius: var(--radio);
+    padding: 0.65rem 1.1rem;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid var(--amarillo-vial); outline-offset: 2px; }
+
+.btn-primario {
+    background: var(--amarillo-vial);
+    color: var(--asfalto-900);
+}
+.btn-secundario {
+    background: var(--asfalto-700);
+    color: var(--blanco-vial);
+    border: 1px solid var(--asfalto-500);
+}
+.btn-institucional {
+    background: var(--verde-institucional);
+    color: var(--blanco-vial);
+}
+.btn-peligro {
+    background: var(--estado-pendiente);
+    color: var(--blanco-vial);
+}
+.btn-texto {
+    background: transparent;
+    color: var(--asfalto-900);
+    padding: 0.5rem 0.7rem;
+}
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.btn-block { width: 100%; justify-content: center; }
+.btn-sm { padding: 0.4rem 0.7rem; font-size: 0.78rem; }
+
+/* ---------- Layout del mapa ---------- */
+.mapa-contenedor {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 64px);
+}
+#mapa { width: 100%; height: 100%; }
+
+.leaflet-popup-content-wrapper {
+    border-radius: var(--radio);
+    font-family: var(--fuente-texto);
+}
+
+/* ---------- Botón flotante "Reporta tu hueco" ---------- */
+.btn-flotante-reportar {
+    position: absolute;
+    bottom: 28px;
+    right: 24px;
+    z-index: 900;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.35rem;
+    border-radius: 999px;
+    box-shadow: var(--sombra);
+}
+
+/* ---------- Leyenda ---------- */
+.leyenda {
+    position: absolute;
+    bottom: 28px;
+    left: 24px;
+    z-index: 900;
+    background: rgba(27, 29, 33, 0.92);
+    color: var(--blanco-vial);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radio);
+    font-size: 0.8rem;
+    box-shadow: var(--sombra);
+}
+.leyenda-item { display: flex; align-items: center; gap: 0.5rem; margin: 0.25rem 0; }
+.leyenda-punto { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 2px solid var(--blanco-vial); }
+
+/* ---------- Modal genérico ---------- */
+.modal-fondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(27, 29, 33, 0.55);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+}
+.modal-fondo[hidden] { display: none; }
+
+.modal-caja {
+    background: var(--blanco-vial);
+    border-radius: 14px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--sombra);
+}
+
+.modal-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid var(--concreto-100);
+    position: sticky;
+    top: 0;
+    background: var(--blanco-vial);
+}
+.modal-encabezado h2 {
+    font-family: var(--fuente-display);
+    font-size: 1.05rem;
+    margin: 0;
+}
+.modal-cerrar {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--asfalto-500);
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+}
+.modal-cerrar:hover { background: var(--concreto-100); }
+
+.modal-cuerpo { padding: 1.2rem 1.4rem 1.5rem; }
+
+/* ---------- Formulario ---------- */
+.campo { margin-bottom: 1.1rem; }
+.campo label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+.campo .ayuda {
+    font-size: 0.75rem;
+    color: var(--asfalto-500);
+    margin-top: 0.3rem;
+}
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
+    width: 100%;
+    font-family: var(--fuente-texto);
+    font-size: 0.9rem;
+    padding: 0.6rem 0.7rem;
+    border: 1.5px solid var(--concreto-300);
+    border-radius: 8px;
+    background: var(--blanco-vial);
+    color: var(--asfalto-900);
+}
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--verde-institucional);
+}
+textarea { resize: vertical; min-height: 70px; }
+
+.grupo-coordenadas {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.grupo-coordenadas .coord-valor {
+    font-family: var(--fuente-datos);
+    font-size: 0.85rem;
+    background: var(--concreto-100);
+    padding: 0.55rem 0.7rem;
+    border-radius: 8px;
+    flex: 1;
+    min-width: 130px;
+}
+
+.zona-foto {
+    border: 2px dashed var(--concreto-300);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+.zona-foto:hover { border-color: var(--verde-institucional); }
+.zona-foto img {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 8px;
+    margin-top: 0.6rem;
+}
+.zona-foto input[type="file"] { display: none; }
+
+.estado-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--fuente-texto);
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    color: var(--blanco-vial);
+}
+.estado-pendiente-bg { background: var(--estado-pendiente); }
+.estado-en_proceso-bg { background: var(--estado-proceso); color: var(--asfalto-900); }
+.estado-reparado-bg { background: var(--estado-reparado); }
+
+.mensaje-error, .mensaje-exito {
+    font-size: 0.82rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+.mensaje-error { background: #FBE4DE; color: #8A2E14; }
+.mensaje-exito { background: #DEF2E9; color: #145C3F; }
+
+/* ---------- Popup de detalle de hueco ---------- */
+.popup-hueco { width: 230px; font-family: var(--fuente-texto); }
+.popup-hueco img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: var(--concreto-100);
+}
+.popup-hueco .popup-direccion { font-weight: 600; font-size: 0.88rem; margin: 0.2rem 0; }
+.popup-hueco .popup-dato {
+    font-family: var(--fuente-datos);
+    font-size: 0.72rem;
+    color: var(--asfalto-500);
+    margin: 0.15rem 0;
+}
+.popup-hueco .popup-descripcion { font-size: 0.82rem; margin: 0.4rem 0; }
+
+/* ---------- Contador de huecos ---------- */
+.contador-huecos {
+    position: absolute;
+    top: 16px;
+    left: 24px;
+    z-index: 900;
+    background: rgba(27, 29, 33, 0.92);
+    color: var(--blanco-vial);
+    padding: 0.75rem 1.1rem;
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 190px;
+}
+.contador-total {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+.contador-numero {
+    font-family: var(--fuente-display);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--amarillo-vial);
+    line-height: 1;
+}
+.contador-label {
+    font-size: 0.72rem;
+    color: var(--concreto-300);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+}
+.contador-desglose {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.contador-chip {
+    font-size: 0.74rem;
+    font-family: var(--fuente-texto);
+    color: var(--concreto-300);
+}
+.contador-chip strong {
+    font-family: var(--fuente-datos);
+    font-size: 0.8rem;
+}
+.contador-chip-pendiente strong { color: var(--estado-pendiente); }
+.contador-chip-proceso strong { color: var(--estado-proceso); }
+.contador-chip-reparado strong { color: var(--estado-reparado); }
+
+@media (max-width: 560px) {
+    .contador-huecos { left: 12px; top: 12px; min-width: 150px; padding: 0.6rem 0.85rem; }
+    .contador-numero { font-size: 1.5rem; }
+}
+
+/* ---------- Spinner ---------- */
+.spinner {
+    width: 18px; height: 18px;
+    border: 3px solid rgba(255,255,255,0.35);
+    border-top-color: var(--blanco-vial);
+    border-radius: 50%;
+    animation: girar 0.7s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 560px) {
+    .marca h1 { font-size: 1rem; }
+    .btn-flotante-reportar { right: 12px; bottom: 20px; padding: 0.75rem 1.05rem; }
+    .leyenda { left: 12px; bottom: 20px; font-size: 0.72rem; padding: 0.6rem 0.8rem; }
+    .modal-caja { max-width: 100%; }
+}

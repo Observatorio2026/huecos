@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Huecos | La Ceja del Tambo</title>
+<meta name="description" content="Reporta y consulta el estado de huecos en las vías del municipio de La Ceja del Tambo, Antioquia.">
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="marca">
+        <span class="franja"></span>
+        <div>
+            <h1>Los Huecos de La Ceja</h1>
+            <span class="subtitulo">Observatorio Urbano - La Ceja del Tambo</span>
+        </div>
+    </div>
+    <div class="header-acciones">
+        <a href="admin.html" class="btn btn-texto" title="Panel administrativo">⚙ Administración</a>
+    </div>
+</header>
+
+<div class="mapa-contenedor">
+    <div id="mapa"></div>
+
+    <div class="leyenda">
+        <strong>Estado del reporte</strong>
+        <div class="leyenda-item"><span class="leyenda-punto" style="background:#E0522E"></span> Pendiente</div>
+        <div class="leyenda-item"><span class="leyenda-punto" style="background:#E0A324"></span> En proceso</div>
+        <div class="leyenda-item"><span class="leyenda-punto" style="background:#2E9E6D"></span> Reparado</div>
+    </div>
+
+    <div class="contador-huecos" id="contadorHuecos">
+        <div class="contador-total">
+            <span class="contador-numero" id="contadorTotal">—</span>
+            <span class="contador-label">Huecos reportados</span>
+        </div>
+        <div class="contador-desglose">
+            <span class="contador-chip contador-chip-pendiente">
+                <strong id="contadorPendiente">0</strong> pendientes
+            </span>
+            <span class="contador-chip contador-chip-proceso">
+                <strong id="contadorProceso">0</strong> en proceso
+            </span>
+            <span class="contador-chip contador-chip-reparado">
+                <strong id="contadorReparado">0</strong> reparados
+            </span>
+        </div>
+    </div>
+
+    <button id="btnAbrirReporte" class="btn btn-primario btn-flotante-reportar">
+        🕳 Reporta tu hueco
+    </button>
+</div>
+
+<!-- ================= MODAL: REPORTAR HUECO ================= -->
+<div id="modalReporte" class="modal-fondo" hidden>
+    <div class="modal-caja">
+        <div class="modal-encabezado">
+            <h2>Reporta tu hueco</h2>
+            <button class="modal-cerrar" data-cerrar-modal aria-label="Cerrar">×</button>
+        </div>
+        <div class="modal-cuerpo">
+
+            <p style="font-size:0.85rem;color:var(--asfalto-500);margin-top:0">
+                Toca un punto del mapa para marcar la ubicación exacta, o usa tu ubicación actual con el botón GPS.
+            </p>
+
+            <div id="mensajeFormulario"></div>
+
+            <form id="formReporte">
+                <!-- 1. FOTO -->
+                <div class="campo">
+                    <label for="inputFoto">1. Foto del hueco</label>
+                    <label class="zona-foto" id="zonaFoto">
+                        <span id="textoZonaFoto">📷 Toca para tomar o subir una foto</span>
+                        <input type="file" id="inputFoto" accept="image/*" capture="environment">
+                        <img id="previewFoto" style="display:none">
+                    </label>
+                </div>
+
+                <!-- 2. COORDENADAS -->
+                <div class="campo">
+                    <label>2. Ubicación del hueco</label>
+                    <div class="grupo-coordenadas">
+                        <span class="coord-valor" id="coordTexto">Sin ubicación seleccionada</span>
+                        <button type="button" id="btnUsarGPS" class="btn btn-secundario btn-sm">📍 Usar mi ubicación</button>
+                    </div>
+                    <p class="ayuda">Permite el acceso a tu ubicación para cargar directamente con las coordenadas.</p>
+                </div>
+
+                <!-- Dirección (autocompletada por geocodificación inversa, editable) -->
+                <div class="campo">
+                    <label for="inputDireccion">Dirección aproximada</label>
+                    <input type="text" id="inputDireccion" placeholder="Ej: Cra 20 # 15-30, Barrio Centro">
+                </div>
+
+                <!-- 3. DESCRIPCIÓN -->
+                <div class="campo">
+                    <label for="inputDescripcion">3. Descripción del hueco *</label>
+                    <textarea id="inputDescripcion" required placeholder="Ej: Hueco profundo de aprox. 60 cm en el carril derecho, riesgo para motociclistas."></textarea>
+                </div>
+
+                <!-- 4. COMENTARIO -->
+                <div class="campo">
+                    <label for="inputComentario">4. Comentario adicional (opcional)</label>
+                    <textarea id="inputComentario" placeholder="Cualquier información adicional que consideres útil"></textarea>
+                </div>
+
+                <button type="submit" id="btnEnviarReporte" class="btn btn-institucional btn-block">
+                    Enviar reporte
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/map.js"></script>
+<script src="js/report.js"></script>
+</body>
+</html>
