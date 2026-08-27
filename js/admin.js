@@ -192,6 +192,7 @@ function abrirDetalle(id) {
 
         <div class="detalle-fila"><span class="etiqueta">Dirección</span><span class="valor">${h.direccion || "—"}</span></div>
         <div class="detalle-fila"><span class="etiqueta">Coordenadas</span><span class="valor">${Number(h.lat).toFixed(6)}, ${Number(h.lng).toFixed(6)}</span></div>
+        <div class="detalle-fila"><span class="etiqueta">Confirmaciones</span><span class="valor">${h.confirmaciones || 1}</span></div>
         <div class="detalle-fila"><span class="etiqueta">Tamaño reportado</span><span class="valor">${ETIQUETA_TAMANO[h.tamano] || h.tamano || "—"}</span></div>
         <div class="detalle-fila"><span class="etiqueta">Material/superficie</span><span class="valor">${ETIQUETA_MATERIAL[h.material] || "No especificado"}</span></div>
         <div class="detalle-fila"><span class="etiqueta">Fecha de reporte</span><span class="valor">${formatearFecha(h.fecha_reporte)}</span></div>

@@ -73,6 +73,45 @@ async function crearReporteHueco(reporte) {
 }
 
 /**
+ * Busca si ya existe un hueco activo (pendiente/en_proceso) muy cerca
+ * de unas coordenadas. Se usa antes de crear un reporte nuevo, para
+ * evitar duplicados del mismo hueco reportado por distintas personas.
+ * @param {number} lat
+ * @param {number} lng
+ * @param {number} radioMetros - radio de búsqueda en metros (default 15)
+ * @returns {Promise<{id: string, confirmaciones: number, distancia_m: number}|null>}
+ */
+async function buscarHuecoCercano(lat, lng, radioMetros = 15) {
+    const { data, error } = await supabaseClient.rpc("buscar_hueco_cercano", {
+        lat_in: lat,
+        lng_in: lng,
+        radio_metros: radioMetros,
+    });
+
+    if (error) {
+        // Si la función RPC todavía no existe (falta correr la migración SQL),
+        // no bloqueamos el reporte: simplemente asumimos que no hay cercanos.
+        console.warn("No se pudo verificar huecos cercanos (¿falta correr la migración SQL?):", error.message);
+        return null;
+    }
+    return data && data.length ? data[0] : null;
+}
+
+/**
+ * Suma 1 al contador de confirmaciones de un hueco ya existente.
+ * @param {string} id - uuid del hueco a confirmar
+ */
+async function confirmarHueco(id) {
+    const { data, error } = await supabaseClient.rpc("confirmar_hueco", { hueco_id: id });
+
+    if (error) {
+        console.error("Error confirmando hueco existente:", error);
+        throw error;
+    }
+    return data && data.length ? data[0] : null;
+}
+
+/**
  * Trae todos los huecos junto con lat/lng ya calculados (ST_Y / ST_X).
  */
 async function obtenerHuecos() {
@@ -94,6 +133,7 @@ async function obtenerHuecos() {
             tamano: row.tamano,
             material: row.material,
             foto_url: row.foto_url,
+            confirmaciones: row.confirmaciones,
             fecha_reporte: row.fecha_reporte,
             lat: row.geometry.coordinates[1],
             lng: row.geometry.coordinates[0],

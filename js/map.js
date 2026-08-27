@@ -101,6 +101,11 @@ function contenidoPopup(hueco) {
         ? `<p class="popup-dato">🧱 ${ETIQUETA_MATERIAL[hueco.material] || hueco.material}</p>`
         : "";
 
+    const confirmacionesTexto =
+        hueco.confirmaciones && hueco.confirmaciones > 1
+            ? `<p class="popup-dato">🔁 Confirmado por ${hueco.confirmaciones} personas</p>`
+            : "";
+
     return `
     <div class="popup-hueco">
         ${foto}
@@ -110,6 +115,7 @@ function contenidoPopup(hueco) {
         <p class="popup-direccion">${hueco.direccion || "Dirección no especificada"}</p>
         <p class="popup-descripcion">${hueco.descripcion || ""}</p>
         ${materialTexto}
+        ${confirmacionesTexto}
         <p class="popup-dato">📍 ${Number(hueco.lat).toFixed(6)}, ${Number(hueco.lng).toFixed(6)}</p>
         <p class="popup-dato">🗓 ${formatearFecha(hueco.fecha_reporte)}</p>
     </div>`;

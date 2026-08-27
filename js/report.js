@@ -39,11 +39,25 @@ function cerrarModalReporte() {
     quitarMarcadorSeleccion();
 }
 
-function mostrarAgradecimiento() {
+function mostrarAgradecimiento(esDuplicado) {
     formReporte.hidden = true;
     instruccionInicial.hidden = true;
     mensajeFormulario.innerHTML = "";
     pantallaAgradecimiento.hidden = false;
+
+    const titulo = document.getElementById("tituloAgradecimiento");
+    const texto = document.getElementById("textoAgradecimiento");
+    if (!titulo || !texto) return; // por si index.html no tiene estos ids todavía
+
+    if (esDuplicado) {
+        titulo.textContent = "¡Ya teníamos ese hueco en el radar!";
+        texto.textContent =
+            "Alguien más ya lo había reportado. Sumamos tu confirmación, y eso ayuda a priorizarlo para reparación.";
+    } else {
+        titulo.textContent = "¡Gracias por tu reporte!";
+        texto.textContent =
+            "Tu hueco ya quedó registrado en el geovisor y será tenido en cuenta por el Laboratorio de Ciudad del Municipio de La Ceja.";
+    }
 }
 
 function volverAlFormulario() {
@@ -67,6 +81,7 @@ function resetearFormulario() {
     previewFoto.style.display = "none";
     previewFoto.src = "";
     textoZonaFoto.style.display = "inline";
+    textoZonaFoto.textContent = textoZonaFotoOriginal;
     mensajeFormulario.innerHTML = "";
     botonesSegmento.forEach((btn) => btn.classList.remove("seleccionado"));
 }
@@ -81,18 +96,42 @@ modalReporte.addEventListener("click", (e) => {
 });
 
 // ---- 1. Foto ----
-inputFoto.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    archivoFotoSeleccionado = file;
+const textoZonaFotoOriginal = textoZonaFoto.textContent;
 
+function mostrarPreview(archivo) {
     const lector = new FileReader();
     lector.onload = (ev) => {
         previewFoto.src = ev.target.result;
         previewFoto.style.display = "block";
         textoZonaFoto.style.display = "none";
+        textoZonaFoto.textContent = textoZonaFotoOriginal;
     };
-    lector.readAsDataURL(file);
+    lector.readAsDataURL(archivo);
+}
+
+inputFoto.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Mientras se comprime, mostramos un texto de espera en vez de la foto
+    previewFoto.style.display = "none";
+    textoZonaFoto.style.display = "inline";
+    textoZonaFoto.textContent = "⏳ Optimizando foto...";
+
+    try {
+        const archivoComprimido = await comprimirImagen(file);
+        console.log(
+            `Foto comprimida: ${(file.size / 1024).toFixed(0)}KB -> ${(archivoComprimido.size / 1024).toFixed(0)}KB`
+        );
+        archivoFotoSeleccionado = archivoComprimido;
+        mostrarPreview(archivoComprimido);
+    } catch (err) {
+        // Si algo falla comprimiendo (formato raro, navegador viejo, etc.),
+        // no bloqueamos el reporte: seguimos con el archivo original.
+        console.warn("No se pudo comprimir la foto, se usará el archivo original:", err);
+        archivoFotoSeleccionado = file;
+        mostrarPreview(file);
+    }
 });
 
 // ---- 4. Tamaño del hueco (selector segmentado) ----
@@ -187,24 +226,38 @@ formReporte.addEventListener("submit", async (e) => {
     btnEnviarReporte.innerHTML = '<span class="spinner"></span> Enviando...';
 
     try {
-        let fotoUrl = null;
-        if (archivoFotoSeleccionado) {
-            fotoUrl = await subirFoto(archivoFotoSeleccionado);
+        // Antes de crear un reporte nuevo, verificamos si ya existe uno
+        // muy cerca (radio de 15 metros) para no duplicar el mismo hueco.
+        const cercano = await buscarHuecoCercano(
+            coordenadasSeleccionadas.lat,
+            coordenadasSeleccionadas.lng,
+            15
+        );
+
+        if (cercano) {
+            await confirmarHueco(cercano.id);
+            await cargarHuecos();
+            mostrarAgradecimiento(true);
+        } else {
+            let fotoUrl = null;
+            if (archivoFotoSeleccionado) {
+                fotoUrl = await subirFoto(archivoFotoSeleccionado);
+            }
+
+            await crearReporteHueco({
+                lat: coordenadasSeleccionadas.lat,
+                lng: coordenadasSeleccionadas.lng,
+                direccion: inputDireccion.value.trim(),
+                descripcion,
+                tamano: tamanoSeleccionado,
+                material: inputMaterial.value || null,
+                comentario: document.getElementById("inputComentario").value.trim(),
+                fotoUrl,
+            });
+
+            await cargarHuecos();
+            mostrarAgradecimiento(false);
         }
-
-        await crearReporteHueco({
-            lat: coordenadasSeleccionadas.lat,
-            lng: coordenadasSeleccionadas.lng,
-            direccion: inputDireccion.value.trim(),
-            descripcion,
-            tamano: tamanoSeleccionado,
-            material: inputMaterial.value || null,
-            comentario: document.getElementById("inputComentario").value.trim(),
-            fotoUrl,
-        });
-
-        await cargarHuecos();
-        mostrarAgradecimiento();
     } catch (err) {
         console.error(err);
         mostrarMensaje("Ocurrió un error al enviar el reporte. Intenta nuevamente.", "error");
