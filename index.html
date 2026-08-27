@@ -16,6 +16,12 @@
 
 <link rel="stylesheet" href="css/styles.css">
 <link rel="icon" href="icono.png" type="image/png">
+<link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Huecos">
+
 </head>
 <body>
 
@@ -187,5 +193,10 @@
 <script src="js/supabaseClient.js"></script>
 <script src="js/map.js"></script>
 <script src="js/report.js"></script>
+<script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+</script>
 </body>
 </html>
