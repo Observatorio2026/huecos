@@ -227,11 +227,11 @@ formReporte.addEventListener("submit", async (e) => {
 
     try {
         // Antes de crear un reporte nuevo, verificamos si ya existe uno
-        // muy cerca (radio de 15 metros) para no duplicar el mismo hueco.
+        // muy cerca (radio de 10 metros) para no duplicar el mismo hueco.
         const cercano = await buscarHuecoCercano(
             coordenadasSeleccionadas.lat,
             coordenadasSeleccionadas.lng,
-            15
+            10
         );
 
         if (cercano) {
